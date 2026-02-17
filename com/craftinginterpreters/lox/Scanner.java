@@ -28,7 +28,7 @@ class Scanner {
 	tokens.add(new Token(EOF, "", null, line));
 	return tokens;
     }
-
+    
     private void scanToken() {
 	char c = advance();
 	switch(c) {
@@ -59,6 +59,27 @@ class Scanner {
 	case '/':
 	    if(match('/')) {
 		while(peek() != '\n' && !isAtEnd()) advance();
+	    }
+	    else if(match('*')) {
+		int mulComCount = 1;
+		while(mulComCount > 0){
+		    if(isAtEnd()){
+			Lox.error(line, "Unterminated multi-line comment");
+			break;
+		    }
+		    if(peek() == '*'){
+			if(peekNext() == '/'){
+			    mulComCount -= 1;
+			}
+		    }
+		    if(peek() == '/'){
+			if(peekNext() == '*'){
+			    mulComCount += 1;
+			}
+		    }
+		    advance();
+		}
+		advance();
 	    }
 	    else {
 		addToken(SLASH);
